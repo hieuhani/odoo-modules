@@ -1,0 +1,80 @@
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="kiu_oauth_server.list">
+      <field name="name">oauth.application.list</field>
+      <field name="model">oauth.application</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="client_id"/>
+          <field name="redirect_uri"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="kiu_oauth_server.form" model="ir.ui.view">
+        <field name="name">oauth.application.form</field>
+        <field name="model">oauth.application</field>
+        <field name="arch" type="xml">
+            <form string="arch">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="client_id"/>
+                        <field name="redirect_uri"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="kiu_oauth_server.action_window">
+      <field name="name">oauth.application.window</field>
+      <field name="res_model">oauth.application</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem name="OAuth Server"
+        id="oauth_server"
+        sequence="4"
+        action="kiu_oauth_server.action_window"
+        web_icon="contacts,static/description/icon.png" />
+
+    <template id="assets" name="Kiu Oauth Server Assets">
+      <link href="/kiu_oauth_server/static/src/less/style.less" rel="stylesheet"/>
+    </template>
+
+    <template id="kiu_oauth_server.scope_confirmation" name="Scopes confirmation">
+      <t t-call-assets="kiu_oauth_server.assets"/>
+      <div id="wrap" class="oe_structure oe_empt">
+          <div class="row">
+              <section id="forms">
+                  <form action="/website_form/" method="post" class="s_website_form form-horizontal container-fluid mt32">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <div class="form-group form-field o_website_form_required">
+                          <div class="col-md-3 col-sm-4 text-right">
+                              <label class="control-label" for="partner_name">Your Name</label>
+                          </div>
+                          <div class="col-md-7 col-sm-8">
+                              <input type="text" class="form-control o_website_form_input" name="partner_name" required="1"/>
+                          </div>
+                      </div>
+                      <div class="form-group form-field o_website_form_required">
+                          <div class="col-md-3 col-sm-4 text-right">
+                              <label class="control-label" for="partner_email">Your Email</label>
+                          </div>
+                          <div class="col-md-7 col-sm-8">
+                              <input type='email' class='form-control o_website_form_input' name="partner_email" required="1"/>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                          <div class="col-md-offset-3 col-sm-offset-4 col-sm-8 col-md-7">
+                              <button type="submit" class="btn btn-primary btn-lg o_website_form_send o_default_snippet_text">Send</button>
+                          </div>
+                      </div>
+                  </form>
+              </section>
+          </div>
+        </div>
+    </template>
+  </data>
+</odoo>
