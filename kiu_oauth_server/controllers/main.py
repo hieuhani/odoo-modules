@@ -42,7 +42,13 @@ class OAuth2(http.Controller):
             return 'Invalid client ID'
 
         if request.httprequest.method == 'GET':
-            return request.render("kiu_oauth_server.scope_confirmation", {'hello': 'world'})
+            scopes = scope.split(',')
+            print apps[0].logo
+            return request.render("kiu_oauth_server.scope_confirmation", {
+                'app': apps[0],
+                'user': request.env.user,
+                'scopes': scopes,
+            })
 
         elif request.httprequest.method == 'POST':
             ACCESS_TOKEN_EXPIRE_SECONDS = 3600

@@ -22,6 +22,7 @@
                         <field name="name"/>
                         <field name="client_id"/>
                         <field name="redirect_uri"/>
+                        <field name="logo" widget="image" />
                     </group>
                 </sheet>
             </form>
@@ -44,37 +45,62 @@
     </template>
 
     <template id="kiu_oauth_server.scope_confirmation" name="Scopes confirmation">
-      <t t-call-assets="kiu_oauth_server.assets"/>
-      <div id="wrap" class="oe_structure oe_empt">
-          <div class="row">
-              <section id="forms">
-                  <form action="/website_form/" method="post" class="s_website_form form-horizontal container-fluid mt32">
-                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                      <div class="form-group form-field o_website_form_required">
-                          <div class="col-md-3 col-sm-4 text-right">
-                              <label class="control-label" for="partner_name">Your Name</label>
-                          </div>
-                          <div class="col-md-7 col-sm-8">
-                              <input type="text" class="form-control o_website_form_input" name="partner_name" required="1"/>
-                          </div>
-                      </div>
-                      <div class="form-group form-field o_website_form_required">
-                          <div class="col-md-3 col-sm-4 text-right">
-                              <label class="control-label" for="partner_email">Your Email</label>
-                          </div>
-                          <div class="col-md-7 col-sm-8">
-                              <input type='email' class='form-control o_website_form_input' name="partner_email" required="1"/>
-                          </div>
-                      </div>
-                      <div class="form-group">
-                          <div class="col-md-offset-3 col-sm-offset-4 col-sm-8 col-md-7">
-                              <button type="submit" class="btn btn-primary btn-lg o_website_form_send o_default_snippet_text">Send</button>
-                          </div>
-                      </div>
-                  </form>
-              </section>
-          </div>
-        </div>
+      <t t-call="web.layout">
+        <t t-set="head">
+            <t t-call-assets="web.assets_common" t-js="false"/>
+            <t t-call-assets="web.assets_frontend" t-js="false"/>
+            <t t-call-assets="web.assets_common" t-css="false"/>
+            <t t-call-assets="web.assets_frontend" t-css="false"/>
+            <t t-call-assets="kiu_oauth_server.assets"/>
+        </t>
+        <form class="oauth-container clearfix" method="post">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <header class="clearfix">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand logo">
+                    <img src="/logo.png" />
+                </a>
+            </div>
+            <ul class="nav navbar-nav navbar-right" id="top_menu">
+              <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                      <b>
+                          <span t-esc="(len(user.name)&gt;25) and (user.name[:23]+'...') or user.name"/>
+                          <span class="caret"></span>
+                      </b>
+                  </a>
+                  <ul class="dropdown-menu js_usermenu" role="menu">
+                      <li id="o_logout"><a t-attf-href="/web/session/logout?redirect=/" role="menuitem">Logout</a></li>
+                  </ul>
+              </li>
+            </ul>
+          </header>
+          <section class="app-info">
+            <img class="app-logo" t-attf-src="data:image/*;base64,{{app.logo}}" />
+            <h3 class="app-name">
+              <t t-esc="app.name" /> will be able to:
+            </h3>
+            <ul class="app-scopes list-group">
+              <t t-foreach="scopes" t-as="s">
+                <li class="list-group-item">
+                  <t t-esc="s"/>
+                </li>
+              </t>
+            </ul>
+          </section>
+          <section class="app-actions">
+            <button class="btn btn-block btn-primary btn-lg continue-authorize">
+                Continue as <t t-esc="user.name" />
+            </button>
+            <a href="/" class="cancel-authorize">
+              Cancel
+            </a>
+            <p class="write-notice">
+              <i class="fa fa-lock" /> This application doesn't modify your database.
+            </p>
+          </section>
+        </form>
+      </t>
     </template>
   </data>
 </odoo>

@@ -1,3 +1,57 @@
-body {
-    color: red;
+.oauth-container {
+    max-width: 500px;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 15px;
+    margin-top: 20px;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+
+    .navbar-header {
+        margin-left: 0;
+        margin-right: 0;
+        .navbar-brand {
+            margin-left: -15px;
+        }
+    }
+    .navbar-right {
+        margin-right: 0 !important;
+        > .dropdown > .dropdown-toggle {
+            background-color: transparent;
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+
+    .app-info {
+        text-align: center;
+        padding: 15px 0;
+        .app-logo {
+            width: 100px;
+        }
+
+        .app-name {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+    }
+
+    .app-actions {
+        text-align: center;
+
+        .continue-authorize {
+            margin-bottom: 50px;
+            font-size: 16px;
+        }
+
+        .cancel-authorize {
+            color: #555;
+            font-size: 16px;
+        }
+
+        .write-notice {
+            color: #888;
+            margin-top: 20px;
+        }
+    }
 }
