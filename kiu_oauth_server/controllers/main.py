@@ -4,6 +4,7 @@ from odoo.http import request
 from datetime import datetime, timedelta
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import werkzeug.utils
+import json
 import random
 
 UNICODE_ASCII_CHARACTER_SET = ('abcdefghijklmnopqrstuvwxyz'
@@ -51,7 +52,7 @@ class OAuth2(http.Controller):
             })
 
         elif request.httprequest.method == 'POST':
-            ACCESS_TOKEN_EXPIRE_SECONDS = 3600
+            ACCESS_TOKEN_EXPIRE_SECONDS = 2629743
             expires = datetime.now() + timedelta(seconds=ACCESS_TOKEN_EXPIRE_SECONDS)
             
             token = generate_token()
@@ -62,3 +63,36 @@ class OAuth2(http.Controller):
                 'token': token,
             })
             return werkzeug.utils.redirect('{url}?oauth_token={token}'.format(url=apps[0].redirect_uri, token=token), 302)
+
+    @http.route('/oauth/read', type='json', auth='public', csrf=False)
+    def read_resource(self, **kw):
+        client_id = request.jsonrequest.get('client_id')
+        resource = request.jsonrequest.get('resource')
+        token = request.httprequest.headers.get('X-Access-Token')
+        if not client_id:
+            return 'Client ID must be specified'
+        if not resource:
+            return 'Resource must be specified'
+        if not token:
+            return 'Invalid access token'
+        access_token = request.env['oauth.access_token'].sudo().search([('token','=' , token)])
+        if not access_token:
+            return 'Access token is not found'
+        if access_token.application_id.client_id != client_id:
+            return 'Invalid client token'
+        if not access_token.is_valid(['%s:perm_read' % resource]):
+            return 'This access token is not eligible to read resource %s or expired' % resource
+        
+        company = access_token.application_id.user_id.company_id
+        return {
+            'name': company.name,
+            'account_no': company.account_no,
+            'street': company.street,
+            'street2': company.street2,
+            'zip': company.zip,
+            'city': company.city,
+            'email': company.email,
+            'phone': company.phone,
+            'fax': company.fax,
+            'website': company.website,
+        }

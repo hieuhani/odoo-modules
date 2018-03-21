@@ -12,6 +12,7 @@ class OAuthApplication(models.Model):
 
     name = fields.Char('Application Name')
     client_id = fields.Char('Client ID', index=True, require=True, default=generate_client_id)
+    user_id = fields.Many2one('res.users', string='User', required=True)
     redirect_uri = fields.Char('Redirect URI', require=True)
     logo = fields.Binary(string="Application Logo")
     token_ids = fields.One2many('oauth.access_token', 'application_id', 'Tokens')

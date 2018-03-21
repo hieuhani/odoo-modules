@@ -29,7 +29,6 @@ class OAuthAccessToken(models.Model):
         if not scopes:
             return True
         
-        app_scopes = set(self.scopes.split())
+        app_scopes = set(self.scopes.split(','))
         resource_scopes = set(scopes)
-
         return resource_scopes.issubset(app_scopes)

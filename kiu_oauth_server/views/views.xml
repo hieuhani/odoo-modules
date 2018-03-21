@@ -20,6 +20,7 @@
                 <sheet>
                     <group>
                         <field name="name"/>
+                        <field name="user_id"/>
                         <field name="client_id"/>
                         <field name="redirect_uri"/>
                         <field name="logo" widget="image" />
