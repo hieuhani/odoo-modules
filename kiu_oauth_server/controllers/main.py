@@ -64,11 +64,12 @@ class OAuth2(http.Controller):
             })
             return werkzeug.utils.redirect('{url}?oauth_token={token}'.format(url=apps[0].redirect_uri, token=token), 302)
 
-    @http.route('/oauth/read', type='json', auth='public', csrf=False)
+    @http.route('/oauth/read', type='json', auth='public', csrf=False, cors='*', methods=['POST', 'OPTIONS'])
     def read_resource(self, **kw):
         client_id = request.jsonrequest.get('client_id')
         resource = request.jsonrequest.get('resource')
-        token = request.httprequest.headers.get('X-Access-Token')
+        token = request.jsonrequest.get('token')
+        resource_id = request.jsonrequest.get('resource_id')
         if not client_id:
             return 'Client ID must be specified'
         if not resource:
@@ -83,8 +84,12 @@ class OAuth2(http.Controller):
         if not access_token.is_valid(['%s:perm_read' % resource]):
             return 'This access token is not eligible to read resource %s or expired' % resource
         
-        company = access_token.application_id.user_id.company_id
-        return {
+        query = []
+        if resource_id:
+            query.append(('id', '=', resource_id))
+        companies = request.env['res.company'].sudo(access_token.application_id.user_id).search(query)
+        results = [{
+            'id': company.id,
             'name': company.name,
             'account_no': company.account_no,
             'street': company.street,
@@ -95,4 +100,7 @@ class OAuth2(http.Controller):
             'phone': company.phone,
             'fax': company.fax,
             'website': company.website,
-        }
+        } for company in companies]
+        if query:
+            return results[0]
+        return results
